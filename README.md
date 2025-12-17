@@ -13,7 +13,7 @@ Mini Java project to practice:
 - Fully covered with unit tests
 
 ## Tech
-- Java 21
+- Java 21  
 - Maven
 - JUnit 5
 - Mockito
