@@ -17,4 +17,6 @@ public interface TaskService {
     List<Task> findAll();
 
     void deleteById(UUID id);
+
+    void updateTitle(UUID id, String newTitle);
 }

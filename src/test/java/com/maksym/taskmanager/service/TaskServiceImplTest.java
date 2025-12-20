@@ -60,4 +60,40 @@ public class TaskServiceImplTest {
                 () -> service.deleteById(UUID.randomUUID())
         );
     }
+
+    @Test
+    void updateTitle_existingTask_updatesTitle() {
+        TaskService service = new TaskServiceImpl(new InMemoryTaskRepository());
+
+        Task task = service.create("Title", "desc", Priority.HIGH, null);
+
+        service.updateTitle(task.getId(), "Updated title");
+
+        Task updated = service.findById(task.getId())
+                .orElseThrow();
+
+        assertEquals("Updated title", updated.getTitle());
+    }
+
+    @Test
+    void updateTitle_missingTask_throwsException() {
+        TaskService service = new TaskServiceImpl(new InMemoryTaskRepository());
+
+        assertThrows(
+                TaskNotFoundException.class,
+                () -> service.updateTitle(UUID.randomUUID(), "New title")
+        );
+    }
+
+    @Test
+    void updateTitle_blankTitle_throwsValidationException() {
+        TaskService service = new TaskServiceImpl(new InMemoryTaskRepository());
+
+        Task task = service.create("Title", "desc", Priority.HIGH, null);
+
+        assertThrows(
+                ValidationException.class,
+                () -> service.updateTitle(task.getId(), " ")
+        );
+    }
 }

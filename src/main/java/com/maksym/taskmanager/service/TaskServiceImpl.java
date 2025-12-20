@@ -55,4 +55,17 @@ public class TaskServiceImpl implements TaskService{
 
         repository.deleteById(id);
     }
+
+    @Override
+    public void updateTitle (UUID id, String newTitle) {
+        if (newTitle == null || newTitle.isBlank()) {
+            throw new ValidationException("title cannot be null or blank");
+        }
+
+        Task task = repository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException(id));
+
+        task.setTitle(newTitle);
+        repository.save(task);
+    }
 }
