@@ -10,10 +10,9 @@ import com.maksym.taskmanager.model.Priority;
 import com.maksym.taskmanager.repo.TaskRepository;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class TaskServiceImpl implements TaskService{
     private final TaskRepository repository;
@@ -92,5 +91,30 @@ public class TaskServiceImpl implements TaskService{
                         || task.getDescription().toLowerCase().contains(normalizedQuery)
                 )
                 .toList();
+    }
+
+    @Override
+    public List<Task> sortByPriorityThenDueAt() {
+        return repository.findAll().stream()
+                .sorted(
+                        Comparator
+                                .comparing(Task::getPriority)
+                                .thenComparing(
+                                        task -> task.getDueAt().orElse(null),
+                                        Comparator.nullsLast(Comparator.naturalOrder())
+                                )
+                )
+                .toList();
+    }
+
+    @Override
+    public Map<Status, Long> countByStatus() {
+        return repository.findAll().stream()
+                .collect(
+                        Collectors.groupingBy(
+                                Task::getStatus,
+                                Collectors.counting()
+                        )
+                );
     }
 }

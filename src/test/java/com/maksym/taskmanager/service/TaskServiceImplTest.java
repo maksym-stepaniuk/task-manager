@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class TaskServiceImplTest {
@@ -125,5 +126,35 @@ public class TaskServiceImplTest {
         List<Task> result = service.search(query);
 
         assertEquals(1, result.size());
+    }
+
+    @Test
+    void sortByPriorityThenDueAt_returnsSortedTasks() {
+        TaskService service = new TaskServiceImpl(new InMemoryTaskRepository());
+
+        Task t1 = service.create("Task 1", "desc", Priority.HIGH, LocalDateTime.of(2025, 1, 10, 10, 0));
+        Task t2 = service.create("Task 2", "desc", Priority.LOW, LocalDateTime.of(2025, 1, 10, 10, 0));
+        Task t3 = service.create("Task 3", "desc", Priority.HIGH, LocalDateTime.of(2025, 1, 5, 11, 25));
+
+        List<Task> result = service.sortByPriorityThenDueAt();
+
+        assertEquals(List.of(t2, t3, t1), result);
+    }
+    
+    @Test
+    void countByStatus_returnsCorrectCounts() {
+        TaskService service = new TaskServiceImpl(new InMemoryTaskRepository());
+        
+        Task t1 = service.create("Task 1", "desc", Priority.HIGH, null);
+        Task t2 = service.create("Task 2", "desc", Priority.HIGH, null);
+        Task t3 = service.create("Task 3", "desc", Priority.HIGH, null);
+        
+        t1.setStatus(Status.IN_PROGRESS);
+        t3.setStatus(Status.IN_PROGRESS);
+        
+        Map<Status, Long> result = service.countByStatus();
+        
+        assertEquals(1L, result.get(Status.TODO));
+        assertEquals(2L, result.get(Status.IN_PROGRESS));
     }
 }

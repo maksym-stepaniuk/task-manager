@@ -23,4 +23,8 @@ public interface TaskService {
     List<Task> listByStatus(Status status);
 
     List<Task> search(String query);
+
+    List<Task> sortByPriorityThenDueAt();
+
+    Map<Status, Long> countByStatus();
 }
