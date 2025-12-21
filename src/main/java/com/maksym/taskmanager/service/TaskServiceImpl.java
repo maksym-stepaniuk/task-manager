@@ -3,6 +3,7 @@ package com.maksym.taskmanager.service;
 import com.maksym.taskmanager.exception.ValidationException;
 import com.maksym.taskmanager.exception.TaskNotFoundException;
 
+import com.maksym.taskmanager.model.Status;
 import com.maksym.taskmanager.model.Task;
 import com.maksym.taskmanager.model.Priority;
 
@@ -10,6 +11,7 @@ import com.maksym.taskmanager.repo.TaskRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -67,5 +69,28 @@ public class TaskServiceImpl implements TaskService{
 
         task.setTitle(newTitle);
         repository.save(task);
+    }
+
+    @Override
+    public List<Task> listByStatus(Status status) {
+        return repository.findAll().stream()
+                .filter(task -> task.getStatus() == status)
+                .toList();
+    }
+
+    @Override
+    public List<Task> search (String query) {
+        if (query == null || query.isBlank()) {
+            return List.of();
+        }
+
+        String normalizedQuery = query.trim().toLowerCase(Locale.ROOT);
+
+        return repository.findAll().stream()
+                .filter(task ->
+                        task.getTitle().toLowerCase().contains(normalizedQuery)
+                        || task.getDescription().toLowerCase().contains(normalizedQuery)
+                )
+                .toList();
     }
 }

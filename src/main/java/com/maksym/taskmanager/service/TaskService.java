@@ -19,4 +19,8 @@ public interface TaskService {
     void deleteById(UUID id);
 
     void updateTitle(UUID id, String newTitle);
+
+    List<Task> listByStatus(Status status);
+
+    List<Task> search(String query);
 }
