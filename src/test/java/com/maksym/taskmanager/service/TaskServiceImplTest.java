@@ -2,10 +2,13 @@ package com.maksym.taskmanager.service;
 import com.maksym.taskmanager.exception.TaskNotFoundException;
 import com.maksym.taskmanager.exception.ValidationException;
 import com.maksym.taskmanager.model.Priority;
+import com.maksym.taskmanager.model.Status;
 import com.maksym.taskmanager.model.Task;
 import com.maksym.taskmanager.repo.InMemoryTaskRepository;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -95,5 +98,32 @@ public class TaskServiceImplTest {
                 ValidationException.class,
                 () -> service.updateTitle(task.getId(), " ")
         );
+    }
+
+    @Test
+    void listByStatus_shouldReturnOnlyTasksWithGivenStatus() {
+        TaskService service = new TaskServiceImpl(new InMemoryTaskRepository());
+
+        Task t1 = service.create("Task 1", "desc", Priority.HIGH, null);
+        Task t2 = service.create("Task 2", "desc", Priority.LOW, null);
+
+        t2.setStatus(Status.DONE);
+
+        List<Task> result = service.listByStatus(Status.TODO);
+
+        assertEquals(1, result.size());
+        assertEquals(t1.getId(), result.get(0).getId());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "JAVA", "java", " stream " })
+    void search_shouldReturnTasksByTitleOrDescription(String query) {
+        TaskService service = new TaskServiceImpl(new InMemoryTaskRepository());
+
+        service.create("Java learning", "Streams and generics", Priority.HIGH, null);
+
+        List<Task> result = service.search(query);
+
+        assertEquals(1, result.size());
     }
 }
