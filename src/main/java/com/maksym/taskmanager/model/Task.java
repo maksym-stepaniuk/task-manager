@@ -27,7 +27,7 @@ public class Task {
 
         this.id = Objects.requireNonNull(id);
         this.title = title;
-        this.description = description;
+        this.description = description == null ? "" : description;
         this.status = Status.TODO;
         this.priority = priority == null ? Priority.MEDIUM : priority;
         this.createdAt = LocalDateTime.now();
@@ -54,7 +54,7 @@ public class Task {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = description == null ? "" : description;
     }
 
     public Status getStatus() {

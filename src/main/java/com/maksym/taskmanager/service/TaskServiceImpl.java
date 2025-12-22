@@ -23,9 +23,7 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public Task create(String title, String description, Priority priority, LocalDateTime dueAt) {
-        if (title == null || title.isBlank()) {
-            throw new ValidationException("title cannot be blank or null");
-        }
+        validateTitle(title);
 
         Task task = new Task(
                 UUID.randomUUID(),
@@ -59,9 +57,7 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public void updateTitle (UUID id, String newTitle) {
-        if (newTitle == null || newTitle.isBlank()) {
-            throw new ValidationException("title cannot be null or blank");
-        }
+        validateTitle(newTitle);
 
         Task task = repository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
@@ -116,5 +112,11 @@ public class TaskServiceImpl implements TaskService{
                                 Collectors.counting()
                         )
                 );
+    }
+
+    private void validateTitle(String title) {
+        if (title == null || title.isBlank()) {
+            throw new ValidationException("title cannot be blank or null");
+        }
     }
 }
